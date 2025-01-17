@@ -3,18 +3,21 @@ package mineswapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Board {
 
-    private int width=10;
-    private int height=10;
-    private int mines=10;
+    private int width=9;
+    private int height=9;
+    private int mines;
     private List<List<Character>> board = new ArrayList<>();
 
 
 
     public Board() {
-
+        System.out.println("How many mines do you want on the field?");
+        Scanner scanner= new Scanner(System.in);
+        mines = scanner.nextInt();
         for (int i = 0; i < height; i++) {
             this.board.add(new ArrayList<>());
             for (int j = 0; j < width; j++) {
