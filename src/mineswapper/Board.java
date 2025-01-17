@@ -13,7 +13,6 @@ public class Board {
     private List<List<Character>> board = new ArrayList<>();
 
 
-
     public Board() {
         System.out.println("How many mines do you want on the field?");
         Scanner scanner= new Scanner(System.in);
@@ -52,5 +51,67 @@ public class Board {
             }
         }
     }
+
+    public void insertNeighboursCount(){
+
+        for (int i =0;i<height;i++){
+            for (int j = 0; j<width; j++){
+                int amountOfMines = calculateNeighboursMines(i,j);
+                char mines =(char)(amountOfMines+'0');
+                if(board.get(i).get(j).equals('X')){
+
+                }else if(amountOfMines>0){
+                    board.get(i).set(j,mines);
+                }else{
+                    board.get(i).set(j,'.');
+                }
+
+            }
+        }
+    }
+    private  int calculateNeighboursMines (int i, int j){
+
+
+        int amountOfMines=0;
+
+
+        if (j+1<width && board.get(i).get(j+1)=='X'){
+            amountOfMines++;
+        }
+
+        if (i+1<height && j+1<width && board.get(i+1).get(j+1)=='X'){
+            amountOfMines++;
+        }
+
+        if (i+1 < height  &&  board.get(i+1).get(j) =='X'){
+            amountOfMines++;
+        }
+
+        if (i+1<height && j-1>=0 && board.get(i+1).get(j-1)=='X'){
+            amountOfMines++;
+        }
+
+        if ( j-1>=0 && board.get(i).get(j-1)=='X'){
+            amountOfMines++;
+        }
+
+        if (i-1>=0 && j-1>=0 && board.get(i-1).get(j-1)=='X'){
+            amountOfMines++;
+        }
+
+        if (i-1>=0  && board.get(i-1).get(j)=='X'){
+            amountOfMines++;
+        }
+
+        if (i-1>=0 && j+1<width  && board.get(i-1).get(j+1) == 'X' ){
+
+            amountOfMines++;
+
+        }
+        return amountOfMines;
+    }
+
+
+
 
 }

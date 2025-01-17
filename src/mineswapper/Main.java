@@ -5,8 +5,8 @@ public class Main {
 
         Board board = new Board();
         board.fillBoardWithRandomMines();
+        board.insertNeighboursCount();
         board.printBorad();
-
 
     }
 }
