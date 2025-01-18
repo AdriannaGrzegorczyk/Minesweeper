@@ -7,20 +7,36 @@ import java.util.Scanner;
 
 public class Board {
 
+    public int getCounterOfMines() {
+        return counterOfMines;
+    }
+
+    public int getCounterOfStar() {
+        return counterOfStar;
+    }
+
+    private int counterOfMines=0;
+    private int counterOfStar=0;
     private int width=9;
     private int height=9;
+
+    public int getMines() {
+        return mines;
+    }
+
     private int mines;
-    private List<List<Character>> board = new ArrayList<>();
+    private List<List<Cell>> board = new ArrayList<>();
 
 
     public Board() {
+
         System.out.println("How many mines do you want on the field?");
         Scanner scanner= new Scanner(System.in);
         mines = scanner.nextInt();
         for (int i = 0; i < height; i++) {
             this.board.add(new ArrayList<>());
             for (int j = 0; j < width; j++) {
-            board.get(i).add(Fields.NON_MARKED_FIELD);
+            board.get(i).add(new Cell());
             }
         }
     }
@@ -35,39 +51,27 @@ public class Board {
             }
         }
 
-
         System.out.print("-|");
         for (int y = 0; y < height; y++) {
             System.out.print("-");
         }
         System.out.println("|");
 
-
         for (int i = 0; i < board.size(); i++) {
             System.out.print(i + 1);
             System.out.print("|");
             for (int j = 0; j < board.get(i).size(); j++) {
-                char cellValue = board.get(i).get(j);
-                if (!revealMines && cellValue == Fields.MINE) {
-                    System.out.print(Fields.NON_MARKED_FIELD);
-
-                } else if (!revealMines && cellValue == 'M') {
-                    System.out.print(Fields.MARKED_FIELD);
-                } else {
-                    System.out.print(cellValue);
-                }
+                char cellValue = board.get(i).get(j).getPrintableValue(revealMines);
+                System.out.print(cellValue);
             }
             System.out.print("|");
             System.out.println();
         }
-
-
         System.out.print("-|");
         for (int h = 0; h < height; h++) {
             System.out.print("-");
         }
         System.out.println("|");
-
     }
 
     public void fillBoardWithRandomMines () {
@@ -79,10 +83,10 @@ public class Board {
             int randomHeight = random.nextInt(height);
             int randomWidth = random.nextInt(width);
 
-            if (board.get(randomHeight).get(randomWidth).equals(Fields.MINE)){
+            if (board.get(randomHeight).get(randomWidth).isMine){
                 i--;
             }else{
-                board.get(randomHeight).set(randomWidth,Fields.MINE);
+                board.get(randomHeight).get(randomWidth).setMine(true);
             }
         }
     }
@@ -93,60 +97,71 @@ public class Board {
             for (int j = 0; j<width; j++){
                 int amountOfMines = calculateNeighboursMines(i,j);
                 char mines =(char)(amountOfMines+'0');
-                if(board.get(i).get(j).equals('X')){
+                if(board.get(i).get(j).isMine){
 
                 }else if(amountOfMines>0){
-                    board.get(i).set(j,mines);
+                    board.get(i).get(j).setNumberOfMinesAround(amountOfMines);
                 }else{
-                    board.get(i).set(j,'.');
+                    //board.get(i).set(j,Fields.NON_MARKED_FIELD);
                 }
-
             }
         }
     }
     private  int calculateNeighboursMines (int i, int j){
 
-
         int amountOfMines=0;
 
-
-        if (j+1<width && board.get(i).get(j+1)=='X'){
+        if (j+1<width && board.get(i).get(j+1).isMine()){
             amountOfMines++;
         }
-
-        if (i+1<height && j+1<width && board.get(i+1).get(j+1)=='X'){
+        if (i+1<height && j+1<width && board.get(i+1).get(j+1).isMine()){
             amountOfMines++;
         }
-
-        if (i+1 < height  &&  board.get(i+1).get(j) =='X'){
+        if (i+1 < height  &&  board.get(i+1).get(j) .isMine()){
             amountOfMines++;
         }
-
-        if (i+1<height && j-1>=0 && board.get(i+1).get(j-1)=='X'){
+        if (i+1<height && j-1>=0 && board.get(i+1).get(j-1).isMine()){
             amountOfMines++;
         }
-
-        if ( j-1>=0 && board.get(i).get(j-1)=='X'){
+        if ( j-1>=0 && board.get(i).get(j-1).isMine()){
             amountOfMines++;
         }
-
-        if (i-1>=0 && j-1>=0 && board.get(i-1).get(j-1)=='X'){
+        if (i-1>=0 && j-1>=0 && board.get(i-1).get(j-1).isMine()){
             amountOfMines++;
         }
-
-        if (i-1>=0  && board.get(i-1).get(j)=='X'){
+        if (i-1>=0  && board.get(i-1).get(j).isMine()){
             amountOfMines++;
         }
-
-        if (i-1>=0 && j+1<width  && board.get(i-1).get(j+1) == 'X' ){
-
+        if (i-1>=0 && j+1<width  && board.get(i-1).get(j+1).isMine()){
             amountOfMines++;
-
         }
         return amountOfMines;
     }
 
+    public void provideCoordinates (){
+        System.out.print("Set/delete mines marks (x and y coordinates): ");
+        Scanner scanner = new Scanner(System.in);
+        int y = scanner.nextInt(), x = scanner.nextInt();
 
 
+        if (!(board.get(x - 1).get(y - 1).isFlagged())) {
+            board.get(x - 1).get(y - 1).setFlagged(true);
+            counterOfStar++;
 
+        } else if (board.get(x - 1).get(y - 1).isFlagged()) {
+            board.get(x - 1).get(y - 1).setFlagged(false);
+            counterOfStar--;
+        }
+
+
+        if (board.get(x - 1).get(y - 1).isMine()) {
+            board.get(x - 1).get(y - 1).setMine(true);
+            counterOfMines++;
+        } else {
+            System.out.println("There is a number here!");
+        }
+
+        printBorad( false);
+
+    }
 }

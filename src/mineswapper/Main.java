@@ -6,7 +6,16 @@ public class Main {
         Board board = new Board();
         board.fillBoardWithRandomMines();
         board.insertNeighboursCount();
-        board.printBorad(true);
+        board.printBorad(false);
+
+        while (1 > 0) {
+            board.provideCoordinates();
+            if (board.getCounterOfMines() == board.getCounterOfMines()) {
+
+                System.out.println("Congratulations! You found all the mines!");
+                break;
+            }
+        }
 
     }
 }

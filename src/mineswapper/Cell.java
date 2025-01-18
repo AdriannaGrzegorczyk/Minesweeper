@@ -6,6 +6,16 @@ public class Cell {
     boolean isNumber;
     boolean isFlagged;
 
+    public int getNumberOfMinesAround() {
+        return numberOfMinesAround;
+    }
+
+    public void setNumberOfMinesAround(int numberOfMinesAround) {
+        this.numberOfMinesAround = numberOfMinesAround;
+    }
+
+    int numberOfMinesAround=0;
+
     public boolean isMine() {
         return isMine;
     }
@@ -29,4 +39,21 @@ public class Cell {
     public void setFlagged(boolean flagged) {
         isFlagged = flagged;
     }
+
+    public char getPrintableValue(boolean shouldReveal) {
+
+        if (!shouldReveal && isFlagged){
+            return Fields.MARKED_FIELD;
+        }else if (!shouldReveal && isMine){
+            return Fields.NON_MARKED_FIELD;
+        } else if (shouldReveal && isMine){
+            return  Fields.MINE;
+        }else if (numberOfMinesAround>0){
+            return (char) (numberOfMinesAround+'0');
+        }
+        else{
+            return  Fields.NON_MARKED_FIELD;
+        }
+    }
+
 }
