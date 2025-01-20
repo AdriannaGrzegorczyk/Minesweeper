@@ -17,8 +17,22 @@ public class Board {
 
     private int counterOfMines=0;
     private int counterOfStar=0;
+
+    public int getCounterOfReveleadFields() {
+        return counterOfReveleadFields;
+    }
+
+    private int counterOfReveleadFields=0;
     private int width=9;
     private int height=9;
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 
     public int getMines() {
         return mines;
@@ -96,13 +110,8 @@ public class Board {
         for (int i =0;i<height;i++){
             for (int j = 0; j<width; j++){
                 int amountOfMines = calculateNeighboursMines(i,j);
-                char mines =(char)(amountOfMines+'0');
-                if(board.get(i).get(j).isMine){
-
-                }else if(amountOfMines>0){
+                if(!board.get(i).get(j).isMine){
                     board.get(i).get(j).setNumberOfMinesAround(amountOfMines);
-                }else{
-                    //board.get(i).set(j,Fields.NON_MARKED_FIELD);
                 }
             }
         }
@@ -139,29 +148,69 @@ public class Board {
     }
 
     public void provideCoordinates (){
-        System.out.print("Set/delete mines marks (x and y coordinates): ");
+        System.out.print("Set/unset mines marks or claim a cell as free: ");
         Scanner scanner = new Scanner(System.in);
         int y = scanner.nextInt(), x = scanner.nextInt();
+        String type = scanner.next();
+        Cell selectedField = board.get(x-1).get(y-1);
 
-
-        if (!(board.get(x - 1).get(y - 1).isFlagged())) {
-            board.get(x - 1).get(y - 1).setFlagged(true);
-            counterOfStar++;
-
-        } else if (board.get(x - 1).get(y - 1).isFlagged()) {
-            board.get(x - 1).get(y - 1).setFlagged(false);
-            counterOfStar--;
-        }
-
-
-        if (board.get(x - 1).get(y - 1).isMine()) {
-            board.get(x - 1).get(y - 1).setMine(true);
-            counterOfMines++;
-        } else {
-            System.out.println("There is a number here!");
+        if (type.equals("free")){
+            if(selectedField.isMine()){
+                printBorad(true);
+                System.out.println("You stepped on a mine and failed!");
+                System.exit(1);
+            }else{
+                recurrenceBoard(board, x-1, y-1);
+            }
+        }else if (type.equals("mine")){
+            if (selectedField.isVisible() && selectedField.getNumberOfMinesAround()>0){
+                System.out.println("There is a number here!");
+            }else if (!selectedField.isFlagged()){
+                selectedField.setFlagged(true);
+                if(selectedField.isMine){
+                    counterOfStar++;
+                }
+            }else if (selectedField.isFlagged()){
+                selectedField.setFlagged(false);
+                if(selectedField.isMine){
+                    counterOfStar--;
+                }
+            }
         }
 
         printBorad( false);
 
+    }
+
+    private void recurrenceBoard(List<List<Cell>> board, int x, int y) {
+
+        if (y < 0 || x < 0 || x >= board.size() || y >= board.get(x).size()) {
+            return;
+        }
+        if (board.get(x).get(y).isMine()) {
+            return;
+        }
+        if (board.get(x).get(y).getNumberOfMinesAround() > 0) {
+            if(!board.get(x).get(y).isVisible()){
+                board.get(x).get(y).setVisible(true);
+                counterOfReveleadFields++;
+            }
+        }
+        else {
+            if (board.get(x).get(y).isVisible()) {
+                return;
+            }
+            board.get(x).get(y).setVisible(true);
+            counterOfReveleadFields++;
+
+            recurrenceBoard(board, x + 1, y);
+            recurrenceBoard(board, x - 1, y);
+            recurrenceBoard(board, x, y - 1);
+            recurrenceBoard(board, x, y + 1);
+            recurrenceBoard(board, x + 1, y + 1);
+            recurrenceBoard(board, x + 1, y - 1);
+            recurrenceBoard(board, x - 1, y + 1);
+            recurrenceBoard(board, x - 1, y - 1);
+        }
     }
 }

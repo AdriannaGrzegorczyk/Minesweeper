@@ -10,8 +10,9 @@ public class Main {
 
         while (1 > 0) {
             board.provideCoordinates();
-            if (board.getCounterOfMines() == board.getCounterOfMines()) {
-
+             if ((board.getMines() == board.getCounterOfStar())
+                     || board.getCounterOfMines() == board.getHeight() * board.getWidth()
+                     - board.getCounterOfReveleadFields()) {
                 System.out.println("Congratulations! You found all the mines!");
                 break;
             }
